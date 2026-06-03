@@ -1,7 +1,6 @@
 name: Build iStore OS 6.x
 
 on:
-  repository_dispatch:
   workflow_dispatch:
     inputs:
       ssh:
