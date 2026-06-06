@@ -118,6 +118,11 @@ jobs:
 
     - name: 安装 feeds
       run: cd openwrt && ./scripts/feeds install -a
+      
+    - name: 升级 Go 版本
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25'
 
     - name: 加载自定义配置
       env:
