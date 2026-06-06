@@ -1,15 +1,12 @@
 name: Build iStore OS 6.x-MTKWIFI
 
 on:
-  repository_dispatch:
   workflow_dispatch:
     # inputs:
       # ssh:
         # description: 'SSH connection to Actions'
         # required: false
         # default: 'false'
-  schedule:
-   - cron: 0 16 * * *
 
 env:
   REPO_URL: https://github.com/istoreos/istoreos
@@ -20,7 +17,7 @@ env:
   DIY_P2_SH: diy-part3-6.x-mtkwifi.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
-  UPLOAD_RELEASE: true
+  UPLOAD_RELEASE: false
   TZ: Asia/Shanghai
   GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
