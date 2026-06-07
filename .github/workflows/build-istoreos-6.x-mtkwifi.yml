@@ -1,12 +1,15 @@
 name: Build iStore OS 6.x-MTKWIFI
 
 on:
+  repository_dispatch:
   workflow_dispatch:
     # inputs:
       # ssh:
         # description: 'SSH connection to Actions'
         # required: false
         # default: 'false'
+  schedule:
+   - cron: 0 16 * * *
 
 env:
   REPO_URL: https://github.com/istoreos/istoreos
@@ -17,7 +20,7 @@ env:
   DIY_P2_SH: diy-part3-6.x-mtkwifi.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
-  UPLOAD_RELEASE: false
+  UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
   GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
@@ -118,26 +121,6 @@ jobs:
 
     - name: 安装 feeds
       run: cd openwrt && ./scripts/feeds install -a
-      
-    - name: 升级 Go 版本
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.25'
-
-    - name: 验证并强制使用新版 Go
-      run: |
-        echo "=== 当前 PATH 中的 Go 版本 ==="
-        go version
-        GO_BIN=$(which go)
-        echo "Go 二进制路径: $GO_BIN"
-        echo "GOROOT: $(go env GOROOT)"
-        # 强制覆盖 OpenWrt 可能自带的 Go
-        sudo ln -sf $GO_BIN /usr/local/bin/go
-        # 设置环境变量，让 make 优先使用 /usr/local/bin 里的 go
-        echo "/usr/local/bin" >> $GITHUB_PATH
-        # 取消 GOTOOLCHAIN=local 的限制，允许使用宿主机的 Go
-        echo "GOTOOLCHAIN=auto" >> $GITHUB_ENV
-        echo "GO111MODULE=on" >> $GITHUB_ENV
 
     - name: 加载自定义配置
       env:
@@ -175,15 +158,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
-    - name: 清理 OpenWrt 残留的旧 Go 工具链
-      run: |
-        cd openwrt
-        # 删除 staging_dir 中可能缓存的旧 Go 二进制
-        rm -f staging_dir/host/bin/go
-        rm -f staging_dir/host/bin/gofmt
-        # 如果 feeds 中有 golang 包编译出的 host 工具也清理掉
-        rm -rf build_dir/host/go-*
 
     - name: 编译固件
       id: compile
