@@ -119,6 +119,11 @@ jobs:
     - name: 安装 feeds
       run: cd openwrt && ./scripts/feeds install -a
 
+    - name: 克隆 OpenClash 插件
+      run: |
+        cd openwrt
+        git clone https://github.com/vernesong/OpenClash.git package/luci-app-openclash
+
     - name: 加载自定义配置
       env:
         CONFIG_FILE_PATH: ${{ matrix.ARCHITECTURE }}/${{ env.CONFIG_FILE }}
